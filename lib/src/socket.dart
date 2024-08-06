@@ -195,9 +195,7 @@ class PhoenixSocket {
           ? _webSocketChannelFactory!(_mountPoint)
           : WebSocketChannel.connect(_mountPoint);
 
-      _ws!.stream
-          .where(_shouldPipeMessage)
-          .listen(_onSocketData, cancelOnError: true)
+      _ws!.stream.where(_shouldPipeMessage).listen(_onSocketData)
         ..onError(_onSocketError)
         ..onDone(_onSocketClosed);
     } catch (error, stacktrace) {
