@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:core';
-import 'dart:developer' as dev;
 import 'dart:math';
 
 import 'package:logging/logging.dart';
@@ -556,16 +555,10 @@ class PhoenixSocket {
       code: _ws?.closeCode,
     );
 
-    dev.log(
-      'Socket closing - reason: "${_ws?.closeReason}" - code: `${_ws?.closeCode}`',
-      name: 'phoenix_socket',
-    );
-
     final exc = PhoenixException(socketClosed: ev);
     _ws = null;
 
     if (!_stateStreamController.isClosed) {
-      dev.log('Socket closed: $ev', name: 'phoenix_socket');
       _stateStreamController.add(ev);
     }
 
