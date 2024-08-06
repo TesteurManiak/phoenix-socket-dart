@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:core';
+import 'dart:developer' as dev;
 import 'dart:math';
 
 import 'package:logging/logging.dart';
@@ -444,7 +445,13 @@ class PhoenixSocket {
   }
 
   Future<bool> _sendHeartbeat({bool ignorePreviousHeartbeat = false}) async {
-    if (!isConnected) return false;
+    if (!isConnected) {
+      dev.log(
+        'Socket disconnected, not sending heartbeat',
+        name: 'phoenix_socket',
+      );
+      return false;
+    }
 
     if (_nextHeartbeatRef != null && !ignorePreviousHeartbeat) {
       _nextHeartbeatRef = null;
@@ -456,6 +463,10 @@ class PhoenixSocket {
 
     try {
       await sendMessage(_heartbeatMessage());
+      dev.log(
+        'Heartbeat completed',
+        name: 'phoenix_socket',
+      );
       _logger.fine('[phoenix_socket] Heartbeat completed');
       return true;
     } on WebSocketChannelException catch (err, stacktrace) {
