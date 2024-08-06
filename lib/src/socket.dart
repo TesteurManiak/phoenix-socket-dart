@@ -199,7 +199,7 @@ class PhoenixSocket {
           .where(_shouldPipeMessage)
           .listen(_onSocketData, cancelOnError: true)
         ..onError(_onSocketError)
-        ..onDone(() => _onSocketClosed('onDone'));
+        ..onDone(_onSocketClosed);
     } catch (error, stacktrace) {
       _onSocketError(error, stacktrace);
     }
@@ -538,11 +538,10 @@ class PhoenixSocket {
     _triggerChannelExceptions(PhoenixException(socketError: socketError));
     _pendingMessages.clear();
 
-    _onSocketClosed('_onSocketError');
+    _onSocketClosed();
   }
 
-  void _onSocketClosed(String method) {
-    dev.log('Close socket from $method', name: 'phoenix_socket');
+  void _onSocketClosed() {
     if (_shouldReconnect) {
       _delayedReconnect();
     }
@@ -555,6 +554,12 @@ class PhoenixSocket {
       reason: _ws?.closeReason ?? 'WebSocket could not establish a connection',
       code: _ws?.closeCode,
     );
+
+    dev.log(
+      'Socket closing - reason: "${_ws?.closeReason}" - code: `${_ws?.closeCode}`',
+      name: 'phoenix_socket',
+    );
+
     final exc = PhoenixException(socketClosed: ev);
     _ws = null;
 
