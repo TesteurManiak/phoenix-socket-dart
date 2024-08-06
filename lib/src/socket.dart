@@ -446,10 +446,6 @@ class PhoenixSocket {
 
   Future<bool> _sendHeartbeat({bool ignorePreviousHeartbeat = false}) async {
     if (!isConnected) {
-      dev.log(
-        'Socket disconnected, not sending heartbeat',
-        name: 'phoenix_socket',
-      );
       return false;
     }
 
@@ -463,10 +459,6 @@ class PhoenixSocket {
 
     try {
       await sendMessage(_heartbeatMessage());
-      dev.log(
-        'Heartbeat completed',
-        name: 'phoenix_socket',
-      );
       _logger.fine('[phoenix_socket] Heartbeat completed');
       return true;
     } on WebSocketChannelException catch (err, stacktrace) {
@@ -535,6 +527,7 @@ class PhoenixSocket {
     );
 
     if (!_stateStreamController.isClosed) {
+      dev.log('Socket error: $socketError', name: 'phoenix_socket');
       _stateStreamController.add(socketError);
     }
 
@@ -566,6 +559,7 @@ class PhoenixSocket {
     _ws = null;
 
     if (!_stateStreamController.isClosed) {
+      dev.log('Socket closed: $ev', name: 'phoenix_socket');
       _stateStreamController.add(ev);
     }
 
