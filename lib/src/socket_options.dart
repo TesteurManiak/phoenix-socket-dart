@@ -37,6 +37,7 @@ class PhoenixSocketOptions {
     /// Either this or [params] car to be provided, but not both.
     this.dynamicParams,
     MessageSerializer? serializer,
+    this.closeSocketOnError = true,
   })  : _timeout = timeout ?? const Duration(seconds: 10),
         serializer = serializer ?? const MessageSerializer(),
         _heartbeat = heartbeat ?? const Duration(seconds: 30),
@@ -65,6 +66,8 @@ class PhoenixSocketOptions {
 
   /// Will be called to get fresh params before each connection attempt.
   final Future<Map<String, String>> Function()? dynamicParams;
+
+  final bool closeSocketOnError;
 
   /// Get connection params.
   Future<Map<String, String>> getParams() async {
