@@ -199,7 +199,7 @@ class PhoenixSocket {
           .where(_shouldPipeMessage)
           .listen(_onSocketData, cancelOnError: true)
         ..onError(_onSocketError)
-        ..onDone(_onSocketClosed);
+        ..onDone(() => _onSocketClosed('onDone'));
     } catch (error, stacktrace) {
       _onSocketError(error, stacktrace);
     }
@@ -256,7 +256,6 @@ class PhoenixSocket {
     if (isConnected) {
       // _ws != null and state is connected
       _socketState = SocketState.closing;
-      dev.log('Closing socket', name: 'phoenix_socket');
       _closeSink(code, reason);
     } else if (!_shouldReconnect) {
       dispose();
@@ -453,10 +452,6 @@ class PhoenixSocket {
     if (_nextHeartbeatRef != null && !ignorePreviousHeartbeat) {
       _nextHeartbeatRef = null;
       if (_ws != null) {
-        dev.log(
-          'Heartbeat timeout: closing socket',
-          name: 'phoenix_socket',
-        );
         _closeSink(normalClosure, 'heartbeat timeout');
       }
       return false;
@@ -543,10 +538,11 @@ class PhoenixSocket {
     _triggerChannelExceptions(PhoenixException(socketError: socketError));
     _pendingMessages.clear();
 
-    _onSocketClosed();
+    _onSocketClosed('_onSocketError');
   }
 
-  void _onSocketClosed() {
+  void _onSocketClosed(String method) {
+    dev.log('Close socket from $method', name: 'phoenix_socket');
     if (_shouldReconnect) {
       _delayedReconnect();
     }
