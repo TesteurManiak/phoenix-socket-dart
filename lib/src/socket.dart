@@ -195,11 +195,12 @@ class PhoenixSocket {
           ? _webSocketChannelFactory!(_mountPoint)
           : WebSocketChannel.connect(_mountPoint);
 
-      _ws!.stream
-          .where(_shouldPipeMessage)
-          .listen(_onSocketData, cancelOnError: _options.closeSocketOnError)
-        ..onError(_onSocketError)
-        ..onDone(_onSocketClosed);
+      _ws!.stream.where(_shouldPipeMessage).listen(
+            _onSocketData,
+            cancelOnError: _options.closeSocketOnError,
+            onError: _onSocketError,
+            onDone: _onSocketClosed,
+          );
     } catch (error, stacktrace) {
       _onSocketError(error, stacktrace);
     }
