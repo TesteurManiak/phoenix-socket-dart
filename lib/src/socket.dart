@@ -256,6 +256,7 @@ class PhoenixSocket {
     if (isConnected) {
       // _ws != null and state is connected
       _socketState = SocketState.closing;
+      dev.log('Closing socket', name: 'phoenix_socket');
       _closeSink(code, reason);
     } else if (!_shouldReconnect) {
       dispose();
@@ -452,6 +453,10 @@ class PhoenixSocket {
     if (_nextHeartbeatRef != null && !ignorePreviousHeartbeat) {
       _nextHeartbeatRef = null;
       if (_ws != null) {
+        dev.log(
+          'Heartbeat timeout: closing socket',
+          name: 'phoenix_socket',
+        );
         _closeSink(normalClosure, 'heartbeat timeout');
       }
       return false;
@@ -527,7 +532,6 @@ class PhoenixSocket {
     );
 
     if (!_stateStreamController.isClosed) {
-      dev.log('Socket error: $socketError', name: 'phoenix_socket');
       _stateStreamController.add(socketError);
     }
 
